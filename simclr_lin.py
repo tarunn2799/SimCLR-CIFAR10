@@ -14,6 +14,8 @@ from torchvision import transforms
 from torchvision.models import resnet18, resnet34
 from models import SimCLR
 from tqdm import tqdm
+from pytorchtools import EarlyStopping
+
 
 
 logger = logging.getLogger(__name__)
@@ -138,6 +140,8 @@ def finetune(args: DictConfig) -> None:
             1e-3))
 
     optimal_loss, optimal_acc = 1e5, 0.
+    early_stopping = EarlyStopping(patience=2, verbose=True)
+    
     for epoch in range(1, args.finetune_epochs + 1):
         train_loss, train_acc = run_epoch(model, train_loader, epoch, optimizer, scheduler)
         test_loss, test_acc = run_epoch(model, test_loader, epoch)
@@ -147,6 +151,16 @@ def finetune(args: DictConfig) -> None:
             optimal_acc = test_acc
             logger.info("==> New best results")
             torch.save(model.state_dict(), 'simclr_lin_{}_best.pth'.format(args.backbone))
+        
+        early_stopping(test_loss, model)
+        
+        if early_stopping.early_stop:
+            print("Early stopping")
+            optimal_loss = train_loss
+            optimal_acc = test_acc
+            logger.info("==> New best results")
+            torch.save(model, 'simclr_lin_{}_best.pt'.format(args.backbone))
+            break
 
     logger.info("Best Test Acc: {:.4f}".format(optimal_acc))
 
