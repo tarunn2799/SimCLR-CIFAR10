@@ -62,7 +62,9 @@ def run_epoch(model, dataloader, epoch, optimizer=None, scheduler=None):
     loss_meter = AverageMeter('loss')
     acc_meter = AverageMeter('acc')
     loader_bar = tqdm(dataloader)
+
     for x, y in loader_bar:
+
         x, y = x.cuda(), y.cuda()
         logits = model(x)
         loss = F.cross_entropy(logits, y)
@@ -106,7 +108,7 @@ def finetune(args: DictConfig) -> None:
     n_classes = 10
     indices = np.random.choice(len(train_set), 10*n_classes, replace=False)
     sampler = SubsetRandomSampler(indices)
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, drop_last=True, sampler=sampler)
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, drop_last=True)
     test_loader = DataLoader(test_set, batch_size=args.batch_size, shuffle=False)
 
     # Prepare model
@@ -115,7 +117,7 @@ def finetune(args: DictConfig) -> None:
     pre_model.load_state_dict(torch.load('simclr_{}_epoch{}.pt'.format(args.backbone, args.load_epoch)))
     model = LinModel(pre_model.enc, feature_dim=pre_model.feature_dim, n_classes=len(train_set.targets))
     model = model.cuda()
-
+    print("DATALOADER" , len(train_loader))
     # Fix encoder
     for param in model.enc.parameters():
         param.requires_grad = False
