@@ -115,7 +115,9 @@ def finetune(args: DictConfig) -> None:
     model = model.cuda()
 
     # Fix encoder
-    model.enc.requires_grad = False
+   for param in model.enc.parameters():
+        param.requires_grad = False
+
     parameters = [param for param in model.parameters() if param.requires_grad is True]  # trainable parameters.
     # optimizer = Adam(parameters, lr=0.001)
 
