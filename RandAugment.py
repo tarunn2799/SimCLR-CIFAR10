@@ -253,6 +253,8 @@ class RandAugment:
     def __init__(self, input_height):
         self.n = random.randint( 3, 10 )
         self.m = random.randint( 0, 30 )  # [0, 30]
+        print("RandAugment Parameter: N= ",self.n," M= ",self.m )
+        print()
         self.augment_list = augment_list()
         self.height = input_height
 

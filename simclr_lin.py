@@ -6,12 +6,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.optim import Adam
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader, SubsetRandomSampler
 from torchvision.datasets import CIFAR10
 from torchvision import transforms
-from torchvision.models import resnet18, resnet34
 from models import SimCLR
 from tqdm import tqdm
 from pytorchtools import EarlyStopping

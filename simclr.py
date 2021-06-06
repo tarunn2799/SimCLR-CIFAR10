@@ -11,7 +11,6 @@ import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10
-from torchvision.models import resnet18, resnet34
 from torchvision import transforms
 
 from RandAugment import RandAugment
