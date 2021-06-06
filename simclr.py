@@ -14,6 +14,7 @@ from torchvision.datasets import CIFAR10
 from torchvision.models import resnet18, resnet34
 from torchvision import transforms
 
+from RandAugment import RandAugment
 from models import SimCLR
 from tqdm import tqdm
 
@@ -85,15 +86,16 @@ def get_color_distortion(s=0.5):  # 0.5 for CIFAR10 by default
 def train(args: DictConfig) -> None:
     assert torch.cuda.is_available()
     cudnn.benchmark = True
-
-    train_transform = transforms.Compose([transforms.RandomResizedCrop(32),
-                                          transforms.RandomHorizontalFlip(p=0.5),
-                                          get_color_distortion(s=0.5),
-                                          transforms.ToTensor()])
+    randAug = RandAugment(args.projection_dim)
+    # train_transform = transforms.Compose([transforms.RandomResizedCrop(32),
+    #                                       transforms.RandomHorizontalFlip(p=0.5),
+    #                                       get_color_distortion(s=0.5),
+    #                                       transforms.ToTensor()])
     data_dir = hydra.utils.to_absolute_path(args.data_dir)  # get absolute path of data dir
     train_set = CIFAR10Pair(root=data_dir,
                             train=True,
-                            transform=train_transform,
+                            transform=randAug,
+                            # transform=train_transform,
                             download=True)
 
     train_loader = DataLoader(train_set,
