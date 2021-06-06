@@ -115,7 +115,7 @@ def finetune(args: DictConfig) -> None:
     base_encoder = eval(args.backbone)
     pre_model = SimCLR(base_encoder, projection_dim=args.projection_dim).cuda()
     pre_model.load_state_dict(torch.load('simclr_{}_epoch{}.pt'.format(args.backbone, args.load_epoch)))
-    model = LinModel(pre_model.enc, feature_dim=pre_model.feature_dim, n_classes=len(train_set.targets))
+    model = LinModel(pre_model.enc, feature_dim=pre_model.feature_dim, n_classes=10)
     model = model.cuda()
     print("DATALOADER" , len(train_loader))
     # Fix encoder
