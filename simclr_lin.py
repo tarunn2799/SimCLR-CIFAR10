@@ -102,8 +102,8 @@ def finetune(args: DictConfig) -> None:
     test_transform = transforms.ToTensor()
 
     data_dir = hydra.utils.to_absolute_path(args.data_dir)
-    train_set = CIFAR10(root=data_dir, train=True, transform=train_transform, download=False)
-    test_set = CIFAR10(root=data_dir, train=False, transform=test_transform, download=False)
+    train_set = CIFAR10(root=data_dir, train=True, transform=train_transform, download=True)
+    test_set = CIFAR10(root=data_dir, train=False, transform=test_transform, download=True)
 
     n_classes = 10
     indices = np.random.choice(len(train_set), 10*n_classes, replace=False)
@@ -119,10 +119,15 @@ def finetune(args: DictConfig) -> None:
     model = model.cuda()
     print("DATALOADER" , len(train_loader))
     # Fix encoder
-    for param in model.enc.parameters():
-        param.requires_grad = False
+    if args.finetune == True:
+        model.enc.requires_grad = False
+        parameters = [param for param in model.parameters() if param.requires_grad is True]  # trainable parameters.
 
-    parameters = [param for param in model.parameters() if param.requires_grad is True]  # trainable parameters.
+    else:
+        for param in model.enc.parameters():
+            param.requires_grad = False
+
+        parameters = [param for param in model.parameters() if param.requires_grad is True]  # trainable parameters.
     # optimizer = Adam(parameters, lr=0.001)
 
     optimizer = torch.optim.SGD(
