@@ -157,7 +157,7 @@ def finetune(args: DictConfig) -> None:
             optimal_loss = train_loss
             optimal_acc = test_acc
             logger.info("==> New best results")
-            torch.save(model.state_dict(), 'simclr_lin_{}_best.pth'.format(args.backbone))
+            torch.save(model, 'simclr_lin_{}_best.pt'.format(args.backbone))
         
         early_stopping(test_loss, model)
         
