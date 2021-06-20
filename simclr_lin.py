@@ -109,7 +109,7 @@ def get_subset(dataset, pct):
     
     return indices
     
-@hydra.main(config_path='simclr_config.yml')
+@hydra.main(config_name = 'simclr_config')
 def finetune(args: DictConfig) -> None:
     train_transform = transforms.Compose([transforms.RandomResizedCrop(32),
                                           transforms.RandomHorizontalFlip(p=0.5),
@@ -121,7 +121,7 @@ def finetune(args: DictConfig) -> None:
     test_set = CIFAR10(root=data_dir, train=False, transform=test_transform, download=True)
     indices = get_subset(train_set, args.pct)
     train_set = torch.utils.data.Subset(train_set, indices)
-    train_loader = DataLoader(train_set, batch_size=args.batch_size, drop_last=True)
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, drop_last=True, shuffle = True)
     test_loader = DataLoader(test_set, batch_size=args.batch_size, shuffle=False)
 
     # Prepare model

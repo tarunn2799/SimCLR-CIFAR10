@@ -12,6 +12,7 @@ hydra:
 
 dataset: cifar10
 data_dir: data
+pct: 1.0
 
 # model
 backbone: resnet18 # or resnet34, resnet50
