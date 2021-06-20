@@ -93,7 +93,21 @@ def get_lr(step, total_steps, lr_max, lr_min):
     """Compute learning rate according to cosine annealing schedule."""
     return lr_min + (lr_max - lr_min) * 0.5 * (1 + np.cos(step / total_steps * np.pi))
 
-
+def get_subset(dataset, pct):
+    per_class_values = (len(dataset) * pct) /10
+    m = defaultdict(list)
+    indices = [] 
+    for i, (x,y) in enumerate(dataset):
+        if y in m.keys():
+            if len(m[y]) < per_class_values:
+                m[y].append(i)
+            else:
+                m[y].append(i)
+    for k,v in m.items():
+        indices.extend(v)
+    
+    return indices
+    
 @hydra.main(config_path='simclr_config.yml')
 def finetune(args: DictConfig) -> None:
     train_transform = transforms.Compose([transforms.RandomResizedCrop(32),
@@ -104,10 +118,8 @@ def finetune(args: DictConfig) -> None:
     data_dir = hydra.utils.to_absolute_path(args.data_dir)
     train_set = CIFAR10(root=data_dir, train=True, transform=train_transform, download=True)
     test_set = CIFAR10(root=data_dir, train=False, transform=test_transform, download=True)
-
-    n_classes = 10
-    indices = np.random.choice(len(train_set), 10*n_classes, replace=False)
-    sampler = SubsetRandomSampler(indices)
+    indices = get_subset(train_set, args.pct)
+    train_set = torch.utils.data.Subset(train_set, indices)
     train_loader = DataLoader(train_set, batch_size=args.batch_size, drop_last=True)
     test_loader = DataLoader(test_set, batch_size=args.batch_size, shuffle=False)
 
