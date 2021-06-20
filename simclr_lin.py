@@ -15,6 +15,7 @@ from torchvision.models import resnet18, resnet34
 from models import SimCLR
 from tqdm import tqdm
 from pytorchtools import EarlyStopping
+from collections import defaultdict
 
 
 
