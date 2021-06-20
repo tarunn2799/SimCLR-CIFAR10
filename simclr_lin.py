@@ -101,8 +101,8 @@ def get_subset(dataset, pct):
         if y in m.keys():
             if len(m[y]) < per_class_values:
                 m[y].append(i)
-            else:
-                m[y].append(i)
+        else:
+            m[y].append(i)
     for k,v in m.items():
         indices.extend(v)
     
